@@ -1,0 +1,36 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Doctor Dashboard</h2>
+        <p>Welcome, Dr. {{ user.first_name }} {{ user.last_name }}!</p>
+        
+        <div class="card">
+            <div class="card-header">
+                <h4>Your Profile Information</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        {% if profile.profile_picture %}
+                            <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="img-thumbnail" style="max-width: 200px;">
+                        {% else %}
+                            <div class="bg-secondary text-white p-4 text-center">No Profile Picture</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-9">
+                        <table class="table">
+                            <tr><th>Name:</th><td>Dr. {{ user.first_name }} {{ user.last_name }}</td></tr>
+                            <tr><th>Username:</th><td>{{ user.username }}</td></tr>
+                            <tr><th>Email:</th><td>{{ user.email }}</td></tr>
+                            <tr><th>User Type:</th><td>{{ profile.user_type|title }}</td></tr>
+                            <tr><th>Address:</th><td>{{ profile.address_line1 }}, {{ profile.city }}, {{ profile.state }} - {{ profile.pincode }}</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
