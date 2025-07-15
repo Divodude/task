@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Profile
+from .models import Profile, BlogPost, BlogCategory
 
 class SignUpForm(UserCreationForm):
     USER_TYPE_CHOICES = [
@@ -37,7 +37,6 @@ class SignUpForm(UserCreationForm):
         
         if commit:
             user.save()
-            # Create profile
             Profile.objects.create(
                 user=user,
                 user_type=self.cleaned_data['user_type'],
@@ -48,3 +47,21 @@ class SignUpForm(UserCreationForm):
                 pincode=self.cleaned_data['pincode']
             )
         return user
+
+class BlogPostForm(forms.ModelForm):
+    class Meta:
+        model = BlogPost
+        fields = ['title', 'image', 'category', 'summary', 'content', 'status']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter blog title'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'summary': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter a brief summary...'}),
+            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 10, 'placeholder': 'Write your blog content here...'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['category'].queryset = BlogCategory.objects.all()
+        self.fields['category'].empty_label = "Select a category"

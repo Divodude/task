@@ -1,0 +1,141 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="mb-3">
+            <a href="{% url 'view_blog_posts' %}" class="btn btn-outline-secondary">← Back to Blog Posts</a>
+        </div>
+        
+        <article class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h1 class="card-title h3 mb-2">{{ post.title }}</h1>
+                        <div class="text-muted">
+                            <span class="badge bg-primary me-2">{{ post.category.name }}</span>
+                            By Dr. {{ post.author.first_name }} {{ post.author.last_name }} • 
+                            {{ post.created_at|date:"F d, Y" }}
+                        </div>
+                    </div>
+                    {% if user == post.author %}
+                        <div class="btn-group">
+                            <a href="{% url 'edit_blog_post' post.id %}" class="btn btn-outline-primary btn-sm">Edit</a>
+                            <a href="{% url 'delete_blog_post' post.id %}" class="btn btn-outline-danger btn-sm">Delete</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if post.image %}
+                <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}" style="max-height: 400px; object-fit: cover;">
+            {% endif %}
+            
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>Summary</h5>
+                    <p class="text-muted fst-italic">{{ post.summary }}</p>
+                </div>
+                
+                <div class="blog-content">
+                    {{ post.content|linebreaks }}
+                </div>
+                
+                <hr class="my-4">
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>About the Author</h6>
+                        <div class="d-flex align-items-center">
+                            {% if post.author.profile.profile_picture %}
+                                <img src="{{ post.author.profile.profile_picture.url }}" 
+                                     alt="Dr. {{ post.author.first_name }} {{ post.author.last_name }}" 
+                                     class="rounded-circle me-3" 
+                                     style="width: 60px; height: 60px; object-fit: cover;">
+                            {% else %}
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" 
+                                     style="width: 60px; height: 60px; font-size: 24px;">
+                                    {{ post.author.first_name.0 }}{{ post.author.last_name.0 }}
+                                </div>
+                            {% endif %}
+                            <div>
+                                <strong>Dr. {{ post.author.first_name }} {{ post.author.last_name }}</strong>
+                                <br>
+                                <small class="text-muted">Healthcare Professional</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6>Post Information</h6>
+                        <p class="mb-1"><strong>Category:</strong> {{ post.category.name }}</p>
+                        <p class="mb-1"><strong>Published:</strong> {{ post.created_at|date:"F d, Y" }}</p>
+                        {% if post.updated_at != post.created_at %}
+                            <p class="mb-1"><strong>Last Updated:</strong> {{ post.updated_at|date:"F d, Y" }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </article>
+        
+        <div class="mt-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Related Articles</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for related_post in related_posts %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100">
+                                    {% if related_post.image %}
+                                        <img src="{{ related_post.image.url }}" class="card-img-top" alt="{{ related_post.title }}" style="height: 150px; object-fit: cover;">
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ related_post.title }}</h6>
+                                        <p class="card-text">{{ related_post.get_truncated_summary|truncatewords:10 }}</p>
+                                        <a href="{% url 'blog_post_detail' related_post.id %}" class="btn btn-outline-primary btn-sm">Read More</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="col-12">
+                                <p class="text-muted">No related articles found.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.blog-content {
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+.blog-content p {
+    margin-bottom: 1rem;
+}
+
+.blog-content h1, .blog-content h2, .blog-content h3, .blog-content h4, .blog-content h5, .blog-content h6 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.blog-content ul, .blog-content ol {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+}
+
+.blog-content blockquote {
+    border-left: 4px solid #007bff;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: #6c757d;
+}
+</style>
+{% endblock %}
